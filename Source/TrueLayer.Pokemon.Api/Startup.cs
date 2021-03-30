@@ -33,6 +33,8 @@ namespace TrueLayer.Pokemon.Api
 
             services.ConfigureLogging(Configuration);
 
+            services.ConfigurePokemonSpeciesServices();
+
             services.AddSwaggerGen(c =>
             {
                 c.SwaggerDoc("v1", new OpenApiInfo { Title = "TrueLayer.Pokemon.Api", Version = "v1" });

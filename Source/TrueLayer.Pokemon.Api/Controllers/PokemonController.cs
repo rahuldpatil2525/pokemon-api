@@ -1,5 +1,9 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using System.Threading;
+using System.Threading.Tasks;
+using Microsoft.AspNetCore.Mvc;
 using TrueLayer.Pokemon.Api.Contract.V1.Response;
+using TrueLayer.Pokemon.Api.Models;
+using TrueLayer.Pokemon.Api.Services;
 
 namespace TrueLayer.Pokemon.Api.Controllers
 {
@@ -7,33 +11,45 @@ namespace TrueLayer.Pokemon.Api.Controllers
     [ApiController]
     public class PokemonController : ControllerBase
     {
+        private readonly IPokemonSpeciesService _pokemonSpeciesService;
+
+        public PokemonController(IPokemonSpeciesService pokemonSpeciesService)
+        {
+            _pokemonSpeciesService = pokemonSpeciesService;
+        }
+
         [HttpGet]
         [Route("v1/pokemon/{name}")]
-        public PokemonResponse Get(string name)
+        public async Task<ActionResult> Get(string name, CancellationToken ct = default)
         {
-            if (name=="generalexception")
-                throw new System.Exception("General UnHandled Exception");
+            var request = new PokemonSpeciesRequest(name);
 
-            return new()
+            var result = await _pokemonSpeciesService.GetPokemonSpeciesAsync(request, ct);
+
+            return Ok(new PokemonResponse()
             {
-                Name = name,
-                Description = "It was created by scientist after years of horrific gene splicing and DNA engineering experiments.",
-                Habitat = "rare",
-                IsLegendary = false
-            };
+                Name = result.Name,
+                Description = result.Description,
+                Habitat = result.Habitat,
+                IsLegendary = result.IsLegendary
+            });
         }
 
         [HttpGet]
         [Route("v1/pokemon/translated/{name}")]
-        public PokemonResponse GetTranslation(string name)
+        public async Task<ActionResult> GetTranslation(string name, CancellationToken ct = default)
         {
-            return new()
+            var request = new PokemonSpeciesRequest(name);
+
+            var result = await _pokemonSpeciesService.GetTranslatedPokemonSpeciesAsync(request, ct);
+
+            return Ok(new PokemonResponse()
             {
-                Name = name,
-                Description = "It was created by scientist after years of horrific gene splicing and DNA engineering experiments.",
-                Habitat = "rare",
-                IsLegendary = true
-            };
+                Name = result.Name,
+                Description = result.Description,
+                Habitat = result.Habitat,
+                IsLegendary = result.IsLegendary
+            });
         }
     }
 }
