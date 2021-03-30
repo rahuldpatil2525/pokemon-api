@@ -11,6 +11,9 @@ namespace TrueLayer.Pokemon.Api.Controllers
         [Route("v1/pokemon/{name}")]
         public PokemonResponse Get(string name)
         {
+            if (name=="generalexception")
+                throw new System.Exception("General UnHandled Exception");
+
             return new()
             {
                 Name = name,

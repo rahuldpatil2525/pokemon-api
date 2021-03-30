@@ -11,6 +11,8 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using TrueLayer.Pokemon.Api.Installer;
+using TrueLayer.Pokemon.Api.Middleware;
 
 namespace TrueLayer.Pokemon.Api
 {
@@ -28,6 +30,9 @@ namespace TrueLayer.Pokemon.Api
         {
 
             services.AddControllers();
+
+            services.ConfigureLogging(Configuration);
+
             services.AddSwaggerGen(c =>
             {
                 c.SwaggerDoc("v1", new OpenApiInfo { Title = "TrueLayer.Pokemon.Api", Version = "v1" });
@@ -45,7 +50,8 @@ namespace TrueLayer.Pokemon.Api
             }
 
             //app.UseHttpsRedirection();
-
+            
+            app.UseMiddleware<GlobalExceptionHandlerMiddleware>();
             app.UseRouting();
 
             app.UseAuthorization();
