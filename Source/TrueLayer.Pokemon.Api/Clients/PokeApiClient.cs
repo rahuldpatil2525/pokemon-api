@@ -3,6 +3,7 @@ using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
 using TrueLayer.Pokemon.Api.Contract.PokeApi;
+using TrueLayer.Pokemon.Api.Exceptions;
 using TrueLayer.Pokemon.Api.Models;
 
 namespace TrueLayer.Pokemon.Api.Clients

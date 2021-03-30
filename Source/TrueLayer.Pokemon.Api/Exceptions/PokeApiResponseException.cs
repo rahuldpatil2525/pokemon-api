@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Runtime.Serialization;
 
-namespace TrueLayer.Pokemon.Api.Clients
+namespace TrueLayer.Pokemon.Api.Exceptions
 {
     [Serializable]
     internal class PokeApiResponseException : Exception

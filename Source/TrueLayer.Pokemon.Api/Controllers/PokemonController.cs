@@ -43,12 +43,13 @@ namespace TrueLayer.Pokemon.Api.Controllers
 
             var result = await _pokemonSpeciesService.GetTranslatedPokemonSpeciesAsync(request, ct);
 
-            return Ok(new PokemonResponse()
+            return Ok(new PokemonTranslatedResponse()
             {
                 Name = result.Name,
                 Description = result.Description,
                 Habitat = result.Habitat,
-                IsLegendary = result.IsLegendary
+                IsLegendary = result.IsLegendary,
+                TranslationProvider=result.TranslationProvider
             });
         }
     }

@@ -11,39 +11,51 @@ namespace TrueLayer.Pokemon.Api.Services
     public interface IPokemonSpeciesService
     {
         Task<PokemonSpeciesResult> GetPokemonSpeciesAsync(PokemonSpeciesRequest pokemonSpeciesRequest, CancellationToken ct);
-        Task<PokemonSpeciesResult> GetTranslatedPokemonSpeciesAsync(PokemonSpeciesRequest pokemonSpeciesRequest, CancellationToken ct);
+        Task<PokemonSpeciesTranslatedResult> GetTranslatedPokemonSpeciesAsync(PokemonSpeciesRequest pokemonSpeciesRequest, CancellationToken ct);
     }
 
     public class PokemonSpeciesService : IPokemonSpeciesService
     {
         private readonly IPokeApiClient _pokeApiClient;
+        private readonly ITranslationStratergy _translationStratergy;
 
-        public PokemonSpeciesService(IPokeApiClient pokeApiClient)
+        public PokemonSpeciesService(IPokeApiClient pokeApiClient, ITranslationStratergy translationStratergy)
         {
             _pokeApiClient = pokeApiClient;
+            _translationStratergy = translationStratergy;
         }
+
         public async Task<PokemonSpeciesResult> GetPokemonSpeciesAsync(PokemonSpeciesRequest pokemonSpeciesRequest, CancellationToken ct)
         {
             var result = await _pokeApiClient.GetResponseAsync(pokemonSpeciesRequest, ct);
 
-            return new PokemonSpeciesResult()
-            {
-                Name = result.Name,
-                Description = result.Description,
-                Habitat = result.Habitat,
-                IsLegendary = result.IsLegendary
-            };
+            return result.ToPokemonSpeciesResult();
         }
 
-        public Task<PokemonSpeciesResult> GetTranslatedPokemonSpeciesAsync(PokemonSpeciesRequest pokemonSpeciesRequest, CancellationToken ct)
+        public async Task<PokemonSpeciesTranslatedResult> GetTranslatedPokemonSpeciesAsync(PokemonSpeciesRequest pokemonSpeciesRequest, CancellationToken ct)
         {
-            return Task.FromResult(new PokemonSpeciesResult()
+            var pokemonSpices = await GetPokemonSpeciesAsync(pokemonSpeciesRequest, ct);
+
+            if (pokemonSpices == null)
+                return null;
+
+            var translationRequest = new PokemonTranslationRequest()
             {
-                Name = pokemonSpeciesRequest.Name,
-                Description = "It was created by scientist after years of horrific gene splicing and DNA engineering experiments.",
-                Habitat = "rare",
-                IsLegendary = true
-            });
+                Habitat = pokemonSpices.Habitat,
+                IsLegendary = pokemonSpices.IsLegendary,
+                TranslationText = pokemonSpices.Description
+            };
+
+            var translatedResult = await _translationStratergy.GetTranslationAsync(translationRequest, ct);
+
+            return new PokemonSpeciesTranslatedResult()
+            {
+                Description = translatedResult.TranslatedDescription,
+                Habitat = pokemonSpices.Habitat,
+                IsLegendary = pokemonSpices.IsLegendary,
+                Name = pokemonSpices.Name,
+                TranslationProvider = translatedResult.TranslationProvider
+            };
         }
     }
 }

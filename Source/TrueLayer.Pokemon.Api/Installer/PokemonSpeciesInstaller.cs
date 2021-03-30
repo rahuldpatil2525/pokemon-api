@@ -5,12 +5,14 @@ using TrueLayer.Pokemon.Api.Services;
 
 namespace TrueLayer.Pokemon.Api.Installer
 {
-    public static class IPokemonSpeciesInstaller
+    public static class PokemonSpeciesInstaller
     {
         public static IServiceCollection ConfigurePokemonSpeciesServices(this IServiceCollection services)
         {
             services.TryAddSingleton<IPokemonSpeciesService, PokemonSpeciesService>();
             services.TryAddSingleton<IPokeApiClient, PokeApiClient>();
+            services.TryAddSingleton<ITranslationApiClient, TranslationApiClient>();
+            services.TryAddSingleton<ITranslationStratergy, TranslationStratergy>();
 
             services.AddHttpClient("PokeApi", x =>
             {
@@ -18,7 +20,7 @@ namespace TrueLayer.Pokemon.Api.Installer
                 x.DefaultRequestHeaders.Add("User-Agent", "TrueLayer.Pokemon.Api");
             });
 
-            services.AddHttpClient("Shakespeare", x =>
+            services.AddHttpClient("TranslationApi", x =>
             {
                 x.BaseAddress = new System.Uri("https://api.funtranslations.com/translate/");
                 x.DefaultRequestHeaders.Add("User-Agent", "TrueLayer.Pokemon.Api");

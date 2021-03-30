@@ -3,13 +3,13 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 16
 VisualStudioVersion = 16.0.31112.23
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TrueLayer.Pokemon.Api", "Source\TrueLayer.Pokemon.Api\TrueLayer.Pokemon.Api.csproj", "{89B917CC-675F-4491-B2EA-BA79131878B2}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TrueLayer.Pokemon.Api", "Source\TrueLayer.Pokemon.Api\TrueLayer.Pokemon.Api.csproj", "{89B917CC-675F-4491-B2EA-BA79131878B2}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tests", "Tests", "{EA6C4E82-49F8-4F8F-AB39-A882C931C4A5}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TrueLayer.Pokemon.Api.UnitTests", "Tests\TrueLayer.Pokemon.Api.UnitTests\TrueLayer.Pokemon.Api.UnitTests.csproj", "{F5E199EA-50CC-4836-87CC-B099FDECEE9D}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TrueLayer.Pokemon.Api.UnitTests", "Tests\TrueLayer.Pokemon.Api.UnitTests\TrueLayer.Pokemon.Api.UnitTests.csproj", "{F5E199EA-50CC-4836-87CC-B099FDECEE9D}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TrueLayer.Pokemon.Api.FunctionalTests", "Tests\TrueLayer.Pokemon.Api.FunctionalTests\TrueLayer.Pokemon.Api.FunctionalTests.csproj", "{E8CE666A-14BD-4FA4-89F5-255E37396020}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TrueLayer.Pokemon.Api.FunctionalTests", "Tests\TrueLayer.Pokemon.Api.FunctionalTests\TrueLayer.Pokemon.Api.FunctionalTests.csproj", "{E8CE666A-14BD-4FA4-89F5-255E37396020}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

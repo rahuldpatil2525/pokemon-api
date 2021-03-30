@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using FluentAssertions;
 using Moq;
 using TrueLayer.Pokemon.Api.Contract.V1.Response;
+using TrueLayer.Pokemon.Api.FunctionalTests.Builders;
 using TrueLayer.Pokemon.Api.FunctionalTests.Extensions;
 using TrueLayer.Pokemon.Api.Middleware.ExceptionHandler;
 using Xunit;
@@ -29,7 +30,7 @@ namespace TrueLayer.Pokemon.Api.FunctionalTests
 
             fakeMessageHandler.ResponseMessage = new HttpResponseMessage(HttpStatusCode.OK)
             {
-                Content = new StringContent("{\"Name\":\"mewtwo\", \"Habitat\":\"rare\",\"IsLegendary\":false ,\"Description\":\"It was created by scientist after years of horrific gene splicing and DNA engineering experiments.\"}")
+                Content = new StringContent(new PokeApiResponseBuilder().Create().ToJson())
             };
 
             var client = factory.CreateClient();
@@ -82,21 +83,166 @@ namespace TrueLayer.Pokemon.Api.FunctionalTests
         }
 
         [Fact]
-        public async Task Return_Expected_Translated_Pokemon_Result()
+        public async Task Return_Expected_Translated_From_Shakespeare_Api_Pokemon_Result()
         {
-            var client = new Factories.PokemonWebApplicationFactory().CreateClient();
+            var factory = new Factories.PokemonWebApplicationFactory();
+
+            var fakeMessageHandler = new Fakes.FakeHttpMessageHandler();
+            var fakeHttpClient = new HttpClient(fakeMessageHandler)
+            {
+                BaseAddress = new Uri("https://test-api-pokemon.com")
+            };
+
+            factory.HttpClientFactory.Setup(x => x.CreateClient("PokeApi")).Returns(fakeHttpClient);
+
+            fakeMessageHandler.ResponseMessage = new HttpResponseMessage(HttpStatusCode.OK)
+            {
+                Content = new StringContent(new PokeApiResponseBuilder()
+                .WithName("mewtwotranslated")
+                .WithDescription("This is not Translated.")
+                .Create().ToJson())
+            };
+
+            var fakeTranslationMessageHandler = new Fakes.FakeHttpMessageHandler();
+            var fakeTranslationHttpClient = new HttpClient(fakeTranslationMessageHandler)
+            {
+                BaseAddress = new Uri("https://test-translation-api-pokemon.com")
+            };
+
+            factory.HttpClientFactory.Setup(x => x.CreateClient("TranslationApi")).Returns(fakeTranslationHttpClient);
+
+            fakeTranslationMessageHandler.ResponseMessage = new HttpResponseMessage(HttpStatusCode.OK)
+            {
+                Content = new StringContent(new TranslationApiResponseBuilder()
+                .WithTranslation("shakespeare")
+                .Create()
+                .ToJson())
+            };
+
+            var client = factory.CreateClient();
+
 
             var response = await client.GetAsync("/api/Pokemon/v1/pokemon/translated/mewtwotranslated");
 
             response.StatusCode.Should().Be(HttpStatusCode.OK);
 
-            var model = await response.Deserialize<PokemonResponse>();
+            var model = await response.Deserialize<PokemonTranslatedResponse>();
 
             model.Should().NotBeNull();
             model.Name.Should().Be("mewtwotranslated");
             model.Habitat.Should().Be("rare");
-            model.Description.Should().Be("It was created by scientist after years of horrific gene splicing and DNA engineering experiments.");
+            model.Description.Should().Be("This is Translated.");
+            model.IsLegendary.Should().BeFalse();
+            model.TranslationProvider.Should().Be("shakespeare");
+
+            factory.HttpClientFactory.Verify(x => x.CreateClient("PokeApi"), Times.Once);
+            factory.HttpClientFactory.Verify(x => x.CreateClient("TranslationApi"), Times.Once);
+        }
+
+        [Fact]
+        public async Task Return_Expected_Translated_From_Yoda_Api_Pokemon_Result()
+        {
+            var factory = new Factories.PokemonWebApplicationFactory();
+
+            var fakeMessageHandler = new Fakes.FakeHttpMessageHandler();
+            var fakeHttpClient = new HttpClient(fakeMessageHandler)
+            {
+                BaseAddress = new Uri("https://test-api-pokemon.com")
+            };
+
+            factory.HttpClientFactory.Setup(x => x.CreateClient("PokeApi")).Returns(fakeHttpClient);
+
+            fakeMessageHandler.ResponseMessage = new HttpResponseMessage(HttpStatusCode.OK)
+            {
+                Content = new StringContent(new PokeApiResponseBuilder()
+                .WithName("mewtwotranslated")
+                .WithDescription("This is not Translated.")
+                .WithIsLegendary(true)
+                .Create().ToJson())
+            };
+
+            var fakeTranslationMessageHandler = new Fakes.FakeHttpMessageHandler();
+            var fakeTranslationHttpClient = new HttpClient(fakeTranslationMessageHandler)
+            {
+                BaseAddress = new Uri("https://test-translation-api-pokemon.com")
+            };
+
+            factory.HttpClientFactory.Setup(x => x.CreateClient("TranslationApi")).Returns(fakeTranslationHttpClient);
+
+            fakeTranslationMessageHandler.ResponseMessage = new HttpResponseMessage(HttpStatusCode.OK)
+            {
+                Content = new StringContent(new TranslationApiResponseBuilder().Create().ToJson())
+            };
+
+            var client = factory.CreateClient();
+
+
+            var response = await client.GetAsync("/api/Pokemon/v1/pokemon/translated/mewtwotranslated");
+
+            response.StatusCode.Should().Be(HttpStatusCode.OK);
+
+            var model = await response.Deserialize<PokemonTranslatedResponse>();
+
+            model.Should().NotBeNull();
+            model.Name.Should().Be("mewtwotranslated");
+            model.Habitat.Should().Be("rare");
+            model.Description.Should().Be("This is Translated.");
             model.IsLegendary.Should().BeTrue();
+            model.TranslationProvider.Should().Be("yoda");
+
+            factory.HttpClientFactory.Verify(x => x.CreateClient("PokeApi"), Times.Once);
+            factory.HttpClientFactory.Verify(x => x.CreateClient("TranslationApi"), Times.Once);
+        }
+
+        [Fact]
+        public async Task Return_Default_Description_When_Translated_Api_Failed_To_Translate()
+        {
+            var factory = new Factories.PokemonWebApplicationFactory();
+
+            var fakeMessageHandler = new Fakes.FakeHttpMessageHandler();
+            var fakeHttpClient = new HttpClient(fakeMessageHandler)
+            {
+                BaseAddress = new Uri("https://test-api-pokemon.com")
+            };
+
+            factory.HttpClientFactory.Setup(x => x.CreateClient("PokeApi")).Returns(fakeHttpClient);
+
+            fakeMessageHandler.ResponseMessage = new HttpResponseMessage(HttpStatusCode.OK)
+            {
+                Content = new StringContent(new PokeApiResponseBuilder()
+                .WithName("mewtwotranslated")
+                .WithDescription("This is not Translated.")
+                .WithIsLegendary(true)
+                .Create().ToJson())
+            };
+
+            var fakeTranslationMessageHandler = new Fakes.FakeHttpMessageHandler();
+            var fakeTranslationHttpClient = new HttpClient(fakeTranslationMessageHandler)
+            {
+                BaseAddress = new Uri("https://test-translation-api-pokemon.com")
+            };
+
+            factory.HttpClientFactory.Setup(x => x.CreateClient("TranslationApi")).Returns(fakeTranslationHttpClient);
+
+            fakeTranslationMessageHandler.ResponseMessage = new HttpResponseMessage(HttpStatusCode.InternalServerError);
+
+            var client = factory.CreateClient();
+
+            var response = await client.GetAsync("/api/Pokemon/v1/pokemon/translated/mewtwotranslated");
+
+            response.StatusCode.Should().Be(HttpStatusCode.OK);
+
+            var model = await response.Deserialize<PokemonTranslatedResponse>();
+
+            model.Should().NotBeNull();
+            model.Name.Should().Be("mewtwotranslated");
+            model.Habitat.Should().Be("rare");
+            model.Description.Should().Be("This is not Translated.");
+            model.IsLegendary.Should().BeTrue();
+            model.TranslationProvider.Should().BeNullOrEmpty();
+
+            factory.HttpClientFactory.Verify(x => x.CreateClient("PokeApi"), Times.Once);
+            factory.HttpClientFactory.Verify(x => x.CreateClient("TranslationApi"), Times.Once);
         }
     }
 }
