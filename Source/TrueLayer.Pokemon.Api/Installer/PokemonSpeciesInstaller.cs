@@ -1,6 +1,7 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using TrueLayer.Pokemon.Api.Clients;
+using TrueLayer.Pokemon.Api.Provider;
 using TrueLayer.Pokemon.Api.Services;
 
 namespace TrueLayer.Pokemon.Api.Installer
@@ -13,7 +14,7 @@ namespace TrueLayer.Pokemon.Api.Installer
             services.TryAddSingleton<IPokeApiClient, PokeApiClient>();
             services.TryAddSingleton<ITranslationApiClient, TranslationApiClient>();
             services.TryAddSingleton<ITranslationStratergy, TranslationStratergy>();
-
+            services.TryAddSingleton<IRetryPolicyProvider, RetryPolicyProvider>();
             services.AddHttpClient("PokeApi", x =>
             {
                 x.BaseAddress = new System.Uri("https://pokeapi.co/api/v2/pokemon-species/");
@@ -21,12 +22,6 @@ namespace TrueLayer.Pokemon.Api.Installer
             });
 
             services.AddHttpClient("TranslationApi", x =>
-            {
-                x.BaseAddress = new System.Uri("https://api.funtranslations.com/translate/");
-                x.DefaultRequestHeaders.Add("User-Agent", "TrueLayer.Pokemon.Api");
-            });
-
-            services.AddHttpClient("Yoda", x =>
             {
                 x.BaseAddress = new System.Uri("https://api.funtranslations.com/translate/");
                 x.DefaultRequestHeaders.Add("User-Agent", "TrueLayer.Pokemon.Api");

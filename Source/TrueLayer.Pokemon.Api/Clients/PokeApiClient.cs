@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using TrueLayer.Pokemon.Api.Contract.PokeApi;
 using TrueLayer.Pokemon.Api.Exceptions;
 using TrueLayer.Pokemon.Api.Models;
+using TrueLayer.Pokemon.Api.Provider;
 
 namespace TrueLayer.Pokemon.Api.Clients
 {
@@ -16,10 +17,11 @@ namespace TrueLayer.Pokemon.Api.Clients
     public class PokeApiClient : IPokeApiClient
     {
         private readonly IHttpClientFactory _httpClientFactory;
-
-        public PokeApiClient(IHttpClientFactory httpClientFactory)
+        private readonly IRetryPolicyProvider _retryPolicyProvider;
+        public PokeApiClient(IHttpClientFactory httpClientFactory, IRetryPolicyProvider retryPolicyProvider)
         {
             _httpClientFactory = httpClientFactory;
+            _retryPolicyProvider = retryPolicyProvider;
         }
 
         public async Task<PokeApiResponse> GetResponseAsync(PokemonSpeciesRequest pokemonSpeciesRequest, CancellationToken ct)
@@ -28,7 +30,7 @@ namespace TrueLayer.Pokemon.Api.Clients
 
             var request = new HttpRequestMessage(HttpMethod.Get, pokemonSpeciesRequest.Name);
 
-            var response = await client.SendAsync(request, ct);
+            var response = await _retryPolicyProvider.AsyncPolicy.ExecuteAsync(async () => await client.SendAsync(request, ct));
 
             if (response.Content == null || !response.IsSuccessStatusCode)
             {

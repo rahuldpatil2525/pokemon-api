@@ -6,6 +6,7 @@ using TrueLayer.Pokemon.Api.Builders;
 using TrueLayer.Pokemon.Api.Contract.TranslationApi;
 using TrueLayer.Pokemon.Api.Exceptions;
 using TrueLayer.Pokemon.Api.Models;
+using TrueLayer.Pokemon.Api.Provider;
 
 namespace TrueLayer.Pokemon.Api.Clients
 {
@@ -17,10 +18,12 @@ namespace TrueLayer.Pokemon.Api.Clients
     public class TranslationApiClient : ITranslationApiClient
     {
         private readonly IHttpClientFactory _httpClientFactory;
+        private readonly IRetryPolicyProvider _retryPolicyProvider;
 
-        public TranslationApiClient(IHttpClientFactory httpClientFactory)
+        public TranslationApiClient(IHttpClientFactory httpClientFactory, IRetryPolicyProvider retryPolicyProvider)
         {
             _httpClientFactory = httpClientFactory;
+            _retryPolicyProvider = retryPolicyProvider;
         }
 
         public async Task<TranslationApiResponse> GetTranslationAsync(PokemonTranslationRequest pokemonTranslationRequest, CancellationToken ct)
@@ -34,7 +37,7 @@ namespace TrueLayer.Pokemon.Api.Clients
 
             var request = new HttpRequestMessage(HttpMethod.Get, queryString);
 
-            var response = await client.SendAsync(request, ct);
+            var response = await _retryPolicyProvider.AsyncPolicy.ExecuteAsync(async () => await client.SendAsync(request, ct));
 
             if (response.Content == null || !response.IsSuccessStatusCode)
             {
