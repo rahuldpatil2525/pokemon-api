@@ -3,9 +3,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace TrueLayer.Pokemon.Api.Models
+namespace TrueLayer.Pokemon.Api.Contract.PokeApi
 {
-    public class PokemonSpeciesResult
+    public class PokeApiResponse
     {
 
         public string Name { get; set; }

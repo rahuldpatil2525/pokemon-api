@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Net;
+using System.Net.Http;
 using System.Threading.Tasks;
 using FluentAssertions;
 using Moq;
@@ -11,12 +12,27 @@ using Xunit;
 
 namespace TrueLayer.Pokemon.Api.FunctionalTests
 {
-    public class PokemonShould:IClassFixture<Factories.PokemonWebApplicationFactory>
+    public class PokemonShould : IClassFixture<Factories.PokemonWebApplicationFactory>
     {
         [Fact]
         public async Task Return_Expected_Pokemon_Result()
         {
-            var client = new Factories.PokemonWebApplicationFactory().CreateClient();
+            var factory = new Factories.PokemonWebApplicationFactory();
+
+            var fakeMessageHandler = new Fakes.FakeHttpMessageHandler();
+            var fakeHttpClient = new HttpClient(fakeMessageHandler)
+            {
+                BaseAddress = new Uri("https://test-api-pokemon.com")
+            };
+
+            factory.HttpClientFactory.Setup(x => x.CreateClient("PokeApi")).Returns(fakeHttpClient);
+
+            fakeMessageHandler.ResponseMessage = new HttpResponseMessage(HttpStatusCode.OK)
+            {
+                Content = new StringContent("{\"Name\":\"mewtwo\", \"Habitat\":\"rare\",\"IsLegendary\":false ,\"Description\":\"It was created by scientist after years of horrific gene splicing and DNA engineering experiments.\"}")
+            };
+
+            var client = factory.CreateClient();
 
             var response = await client.GetAsync("/api/Pokemon/v1/pokemon/mewtwo");
 
@@ -29,12 +45,24 @@ namespace TrueLayer.Pokemon.Api.FunctionalTests
             model.Habitat.Should().Be("rare");
             model.Description.Should().Be("It was created by scientist after years of horrific gene splicing and DNA engineering experiments.");
             model.IsLegendary.Should().BeFalse();
+
+            factory.HttpClientFactory.Verify(x => x.CreateClient("PokeApi"), Times.Once);
         }
 
         [Fact]
         public async Task Return_Internal_Server_Error_When_Unhandled_Exception_Thrown()
         {
             var factory = new Factories.PokemonWebApplicationFactory();
+
+            var fakeMessageHandler = new Fakes.FakeHttpMessageHandler();
+            var fakeHttpClient = new HttpClient(fakeMessageHandler)
+            {
+                BaseAddress = new Uri("https://test-api-pokemon.com")
+            };
+
+            factory.HttpClientFactory.Setup(x => x.CreateClient("PokeApi")).Returns(fakeHttpClient);
+
+            fakeMessageHandler.ResponseMessage = new HttpResponseMessage(HttpStatusCode.InternalServerError);
 
             var client = factory.CreateClient();
 
@@ -49,7 +77,8 @@ namespace TrueLayer.Pokemon.Api.FunctionalTests
             error[0].ErrorCode.Should().Be("UnknownError");
             error[0].ErrorMessage.Should().Be("UnKnown Error Occoured");
 
-            factory.Instrumentor.Verify(x => x.LogException(It.IsAny<int>(), It.IsAny<Exception>(), It.IsAny<IDictionary<string,object>>()), Times.Once);
+            factory.Instrumentor.Verify(x => x.LogException(It.IsAny<int>(), It.IsAny<Exception>(), It.IsAny<IDictionary<string, object>>()), Times.Once);
+            factory.HttpClientFactory.Verify(x => x.CreateClient("PokeApi"), Times.Once);
         }
 
         [Fact]
