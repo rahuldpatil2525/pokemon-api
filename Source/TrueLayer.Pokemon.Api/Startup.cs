@@ -30,10 +30,9 @@ namespace TrueLayer.Pokemon.Api
         {
 
             services.AddControllers();
-
+            services.ConfigureConfigurations(Configuration);
             services.ConfigureLogging(Configuration);
-
-            services.ConfigurePokemonSpeciesServices();
+            services.ConfigurePokemonSpeciesServices(Configuration);
 
             services.AddSwaggerGen(c =>
             {
@@ -52,7 +51,7 @@ namespace TrueLayer.Pokemon.Api
             }
 
             //app.UseHttpsRedirection();
-            
+
             app.UseMiddleware<GlobalExceptionHandlerMiddleware>();
             app.UseRouting();
 

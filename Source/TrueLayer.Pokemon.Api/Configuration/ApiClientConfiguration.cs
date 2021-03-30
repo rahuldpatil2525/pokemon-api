@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 
 namespace TrueLayer.Pokemon.Api.Configuration
 {
-    public class PokeApiClientConfiguration
+    public class ApiClientConfiguration
     {
     }
 }

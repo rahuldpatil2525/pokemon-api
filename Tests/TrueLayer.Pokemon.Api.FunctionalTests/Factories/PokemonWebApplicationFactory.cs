@@ -1,4 +1,5 @@
-﻿using System.Net.Http;
+﻿using System;
+using System.Net.Http;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.AspNetCore.TestHost;
@@ -13,6 +14,7 @@ namespace TrueLayer.Pokemon.Api.FunctionalTests.Factories
 
         public PokemonWebApplicationFactory()
         {
+            SetEnvironmentVariable();
             Instrumentor = new();
             HttpClientFactory = new();
         }
@@ -27,7 +29,13 @@ namespace TrueLayer.Pokemon.Api.FunctionalTests.Factories
             {
                 services.Add(ServiceDescriptor.Singleton(typeof(IInstrumentor), Instrumentor.Object));
                 services.Add(ServiceDescriptor.Singleton(typeof(IHttpClientFactory), HttpClientFactory.Object));
-            });            
+            });
+        }
+
+        private void SetEnvironmentVariable()
+        {
+            Environment.SetEnvironmentVariable("ASPNETCORE_ENVIRONMENT", "Functional");
+            Environment.SetEnvironmentVariable("AzureKeyVaultEnabled", "false");
         }
     }
 }

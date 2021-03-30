@@ -1,4 +1,5 @@
-﻿using Microsoft.Extensions.DependencyInjection;
+﻿using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using TrueLayer.Pokemon.Api.Clients;
 using TrueLayer.Pokemon.Api.Provider;
@@ -8,7 +9,7 @@ namespace TrueLayer.Pokemon.Api.Installer
 {
     public static class PokemonSpeciesInstaller
     {
-        public static IServiceCollection ConfigurePokemonSpeciesServices(this IServiceCollection services)
+        public static IServiceCollection ConfigurePokemonSpeciesServices(this IServiceCollection services, IConfiguration configuration)
         {
             services.TryAddSingleton<IPokemonSpeciesService, PokemonSpeciesService>();
             services.TryAddSingleton<IPokeApiClient, PokeApiClient>();
@@ -17,13 +18,13 @@ namespace TrueLayer.Pokemon.Api.Installer
             services.TryAddSingleton<IRetryPolicyProvider, RetryPolicyProvider>();
             services.AddHttpClient("PokeApi", x =>
             {
-                x.BaseAddress = new System.Uri("https://pokeapi.co/api/v2/pokemon-species/");
+                x.BaseAddress = new System.Uri(configuration.GetSection("ApiClientConfiguration:PokeApiBaseUrl").Get<string>());
                 x.DefaultRequestHeaders.Add("User-Agent", "TrueLayer.Pokemon.Api");
             });
 
             services.AddHttpClient("TranslationApi", x =>
             {
-                x.BaseAddress = new System.Uri("https://api.funtranslations.com/translate/");
+                x.BaseAddress = new System.Uri(configuration.GetSection("ApiClientConfiguration:TranslationApiBaseUrl").Get<string>());
                 x.DefaultRequestHeaders.Add("User-Agent", "TrueLayer.Pokemon.Api");
             });
 
