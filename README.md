@@ -1,9 +1,16 @@
 # pokemon-api
 
-# Introduction
+## Introduction
+This repo contains Pokemon API, Use to get the Pokemon Information and Translation
 
-# Getting Started
+##Contents
 
-# Build and Test
+* [.Net 5 Rest API]
+* [Docker File] (#docker-file)
+* [Test Projects]
 
-# Contribute
+## Getting Started
+
+## Build and Test
+
+## Contribute
