@@ -9,6 +9,8 @@
 
         public string TranslationProvider => GetTranslationProvider();
 
+        //currently there is only two api are available for different translations, but if needs to extend for more API,
+        //then this needs to refactor to use  either stratergy pattern or use the dependency injection to register different api at runtime and resolve 
         private string GetTranslationProvider()
         {
             if (Habitat.ToLower().Equals("cave") || IsLegendary)
