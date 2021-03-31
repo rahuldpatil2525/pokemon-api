@@ -25,5 +25,12 @@ This docker file contains the tool needed in the pipeline. the image is based on
 
 ## Build and Test
 
+### Run from Visual Studio
+
+- `Set Profile` - Select Profile from the list of profile. Recommended to use `TrueLayer.Pokemon.Api`. All the required parameters are set in the `launchSetting.json` file.
+
+- Run the Application
+
+- Use `http://localhost:8080/swagger/index.html`url  from browser to test the API using `swagger`
 
 ## Contribute
