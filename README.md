@@ -8,8 +8,8 @@ This repo contains Pokemon API, Use to get the Pokemon Information and Translati
 - [.Net 5 Rest API]
 - [Docker File] (#docker-file)
 - [Test Projects]
-  -  TrueLayer.Pokemon.Api.FunctionalTests - Functional tests, run the end to end functionality and check all the dependent services run. Here we have mocked only external dependency. So that we can test all the code and each and every use case. Keep Functional test cases coverage as much as possible. 
-  - TrueLayer.Pokemon.Api.UnitTests - Unit test, this will test unit of work.
+  -  `TrueLayer.Pokemon.Api.FunctionalTests` - Functional tests, run the end to end functionality and check all the dependent services run. Here we have mocked only external dependency. So that we can test all the code and each and every use case. Keep Functional test cases coverage as much as possible. 
+  - `TrueLayer.Pokemon.Api.UnitTests` - Unit test, this will test unit of work.
 
 ## Docker File
 
