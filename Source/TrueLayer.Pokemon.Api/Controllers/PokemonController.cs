@@ -26,6 +26,9 @@ namespace TrueLayer.Pokemon.Api.Controllers
 
             var result = await _pokemonSpeciesService.GetPokemonSpeciesAsync(request, ct);
 
+            if (result.HasError)
+                return NotFoundResponse(result.ErrorCode, result.ErrorMessage);
+
             return Ok(new PokemonResponse()
             {
                 Name = result.PokemonSpecies.Name,
