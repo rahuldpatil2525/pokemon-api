@@ -46,7 +46,7 @@ namespace TrueLayer.Pokemon.Api.Controllers
             if (result.HasError)
                 return NotFoundResponse(result.ErrorCode, result.ErrorMessage);
 
-            return Ok(new PokemonTranslatedResponse()
+            return base.Ok(new Contract.V1.Response.TranslatedPokemonResponse()
             {
                 Name = result.TranslatedResult.Name,
                 Description = result.TranslatedResult.TranslatedDescription,

@@ -16,7 +16,7 @@ namespace TrueLayer.Pokemon.Api.Contract.V1.Response
         public bool IsLegendary { get; set; }
     }
 
-    public class PokemonTranslatedResponse
+    public class TranslatedPokemonResponse
     {
         public string Name { get; set; }
 

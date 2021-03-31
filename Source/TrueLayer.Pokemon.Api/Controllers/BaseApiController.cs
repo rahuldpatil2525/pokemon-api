@@ -1,5 +1,6 @@
 ﻿using System.Net.Http;
 using Microsoft.AspNetCore.Mvc;
+using TrueLayer.Pokemon.Api.Contract.V1.Response;
 
 namespace TrueLayer.Pokemon.Api.Controllers
 {

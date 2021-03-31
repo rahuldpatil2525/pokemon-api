@@ -126,7 +126,7 @@ namespace TrueLayer.Pokemon.Api.FunctionalTests
 
             response.StatusCode.Should().Be(HttpStatusCode.OK);
 
-            var model = await response.Deserialize<PokemonTranslatedResponse>();
+            var model = await response.Deserialize<TranslatedPokemonResponse>();
 
             model.Should().NotBeNull();
             model.Name.Should().Be("mewtwotranslated");
@@ -181,7 +181,7 @@ namespace TrueLayer.Pokemon.Api.FunctionalTests
 
             response.StatusCode.Should().Be(HttpStatusCode.OK);
 
-            var model = await response.Deserialize<PokemonTranslatedResponse>();
+            var model = await response.Deserialize<TranslatedPokemonResponse>();
 
             model.Should().NotBeNull();
             model.Name.Should().Be("mewtwotranslated");
@@ -232,7 +232,7 @@ namespace TrueLayer.Pokemon.Api.FunctionalTests
 
             response.StatusCode.Should().Be(HttpStatusCode.OK);
 
-            var model = await response.Deserialize<PokemonTranslatedResponse>();
+            var model = await response.Deserialize<TranslatedPokemonResponse>();
 
             model.Should().NotBeNull();
             model.Name.Should().Be("mewtwotranslated");
@@ -243,6 +243,38 @@ namespace TrueLayer.Pokemon.Api.FunctionalTests
 
             factory.HttpClientFactory.Verify(x => x.CreateClient("PokeApi"), Times.Once);
             factory.HttpClientFactory.Verify(x => x.CreateClient("TranslationApi"), Times.Once);
+        }
+
+        [Fact]
+        public async Task Return_NotFound_When_Pokemon_Is_Not_Found()
+        {
+            var factory = new Factories.PokemonWebApplicationFactory();
+
+            var fakeMessageHandler = new Fakes.FakeHttpMessageHandler();
+            var fakeHttpClient = new HttpClient(fakeMessageHandler)
+            {
+                BaseAddress = new Uri("https://test-api-pokemon.com")
+            };
+
+            factory.HttpClientFactory.Setup(x => x.CreateClient("PokeApi")).Returns(fakeHttpClient);
+
+            fakeMessageHandler.ResponseMessage = new HttpResponseMessage(HttpStatusCode.NotFound)
+            {
+                Content = new StringContent("Not Found")
+            };
+
+           var client = factory.CreateClient();
+
+            var response = await client.GetAsync("/api/Pokemon/v1/pokemon/translated/mewtwotranslated");
+
+            response.StatusCode.Should().Be(HttpStatusCode.NotFound);
+
+            var model = await response.Deserialize<ApiErrorResponse>();
+
+            model.ErrorCode.Should().Be(404);
+
+            factory.HttpClientFactory.Verify(x => x.CreateClient("PokeApi"), Times.Once);
+            factory.HttpClientFactory.Verify(x => x.CreateClient("TranslationApi"), Times.Never);
         }
     }
 }
