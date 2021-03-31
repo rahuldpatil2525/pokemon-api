@@ -9,7 +9,7 @@ namespace TrueLayer.Pokemon.Api.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class PokemonController : ControllerBase
+    public class PokemonController : BaseApiController
     {
         private readonly IPokemonSpeciesService _pokemonSpeciesService;
 
@@ -28,10 +28,10 @@ namespace TrueLayer.Pokemon.Api.Controllers
 
             return Ok(new PokemonResponse()
             {
-                Name = result.Name,
-                Description = result.Description,
-                Habitat = result.Habitat,
-                IsLegendary = result.IsLegendary
+                Name = result.PokemonSpecies.Name,
+                Description = result.PokemonSpecies.Description,
+                Habitat = result.PokemonSpecies.Habitat,
+                IsLegendary = result.PokemonSpecies.IsLegendary
             });
         }
 
@@ -43,13 +43,16 @@ namespace TrueLayer.Pokemon.Api.Controllers
 
             var result = await _pokemonSpeciesService.GetTranslatedPokemonSpeciesAsync(request, ct);
 
+            if (result.HasError)
+                return NotFoundResponse(result.ErrorCode, result.ErrorMessage);
+
             return Ok(new PokemonTranslatedResponse()
             {
-                Name = result.Name,
-                Description = result.Description,
-                Habitat = result.Habitat,
-                IsLegendary = result.IsLegendary,
-                TranslationProvider=result.TranslationProvider
+                Name = result.TranslatedResult.Name,
+                Description = result.TranslatedResult.TranslatedDescription,
+                Habitat = result.TranslatedResult.Habitat,
+                IsLegendary = result.TranslatedResult.IsLegendary,
+                TranslationProvider = result.TranslatedResult.TranslationProvider
             });
         }
     }

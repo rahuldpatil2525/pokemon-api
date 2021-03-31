@@ -32,6 +32,9 @@ namespace TrueLayer.Pokemon.Api.Clients
 
             var response = await _retryPolicyProvider.AsyncPolicy.ExecuteAsync(async () => await client.SendAsync(request, ct));
 
+            if (response.StatusCode == System.Net.HttpStatusCode.NotFound)
+                throw new PokemonNotFoundException($"Pokemon Not Found: {pokemonSpeciesRequest.Name}");
+
             if (response.Content == null || !response.IsSuccessStatusCode)
             {
                 throw new PokeApiResponseException("Failed to retrieve response from Poke API.");

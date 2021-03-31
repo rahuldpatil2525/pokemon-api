@@ -24,26 +24,27 @@ namespace TrueLayer.Pokemon.Api.Services
 
         public async Task<PokemonTranslatedResult> GetTranslationAsync(PokemonTranslationRequest pokemonTranslationRequest, CancellationToken ct)
         {
+            var result = new PokemonTranslatedResult()
+            {
+                Name = pokemonTranslationRequest.Name,
+                Habitat = pokemonTranslationRequest.Habitat,
+                IsLegendary = pokemonTranslationRequest.IsLegendary,
+                Description = pokemonTranslationRequest.TranslationText
+            };
+
             try
             {
                 var translatedResponse = await _translationApiClient.GetTranslationAsync(pokemonTranslationRequest, ct);
-
-                return new PokemonTranslatedResult()
-                {
-                    Description = translatedResponse.Contents.Text,
-                    TranslatedDescription = translatedResponse.Contents.Translated,
-                    TranslationProvider=translatedResponse.Contents.Translation
-                };
+                result.TranslatedDescription = translatedResponse.Contents.Translated;
+                result.TranslationProvider = translatedResponse.Contents.Translation;
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 _instrumentor.LogException(EventIds.TranslationApiFailedException, ex);
-                return new PokemonTranslatedResult()
-                {
-                    Description=pokemonTranslationRequest.TranslationText,
-                    TranslatedDescription=pokemonTranslationRequest.TranslationText
-                };
+                result.TranslatedDescription = result.Description;
             }
+
+            return result;
         }
     }
 }

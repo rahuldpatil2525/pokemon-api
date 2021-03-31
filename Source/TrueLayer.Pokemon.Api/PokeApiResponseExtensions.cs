@@ -9,9 +9,9 @@ namespace TrueLayer.Pokemon.Api
 {
     public static class PokeApiResponseExtensions
     {
-        public static PokemonSpeciesResult ToPokemonSpeciesResult(this PokeApiResponse pokeApiResponse)
+        public static PokemonSpecies ToPokemonSpecies(this PokeApiResponse pokeApiResponse)
         {
-            return new PokemonSpeciesResult()
+            return new PokemonSpecies()
             {
                 Name = pokeApiResponse.Name,
                 Description = GetDescription(pokeApiResponse),

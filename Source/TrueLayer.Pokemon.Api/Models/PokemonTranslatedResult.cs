@@ -12,5 +12,11 @@ namespace TrueLayer.Pokemon.Api.Models
         public string TranslationProvider { get; set; }
 
         public bool IsTranslated => !string.IsNullOrEmpty(TranslationProvider);
+
+        public string Name { get; set; }
+
+        public string Habitat { get; set; }
+
+        public bool IsLegendary { get; set; }
     }
 }

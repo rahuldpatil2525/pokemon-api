@@ -1,23 +1,28 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-
-namespace TrueLayer.Pokemon.Api.Models
+﻿namespace TrueLayer.Pokemon.Api.Models
 {
     public class PokemonSpeciesResult
     {
+        public PokemonSpeciesResult(PokemonSpecies pokemonSpecies)
+        {
+            PokemonSpecies = pokemonSpecies;
+        }
 
-        public string Name { get; set; }
+        public PokemonSpeciesResult(int errorCode, string errorMessage)
+        {
+            HasError = true;
+            ErrorCode = errorCode;
+            ErrorMessage = errorMessage;
+        }
 
-        public string Description { get; set; }
+        public PokemonSpecies PokemonSpecies { get; }
+        public bool HasError { get; }
 
-        public string Habitat { get; set; }
+        public int ErrorCode { get; }
 
-        public bool IsLegendary { get; set; }
+        public string ErrorMessage { get; }
     }
 
-    public class PokemonSpeciesTranslatedResult
+    public class PokemonSpecies
     {
 
         public string Name { get; set; }
@@ -27,7 +32,5 @@ namespace TrueLayer.Pokemon.Api.Models
         public string Habitat { get; set; }
 
         public bool IsLegendary { get; set; }
-
-        public string TranslationProvider { get; set; }
     }
 }

@@ -16,46 +16,45 @@ namespace TrueLayer.Pokemon.Api.Services
 
     public class PokemonSpeciesService : IPokemonSpeciesService
     {
-        private readonly IPokeApiClient _pokeApiClient;
+        private readonly IPokemonSpeciesRetriever _pokemonSpeciesRetriever;
         private readonly ITranslationStratergy _translationStratergy;
 
-        public PokemonSpeciesService(IPokeApiClient pokeApiClient, ITranslationStratergy translationStratergy)
+        public PokemonSpeciesService(IPokemonSpeciesRetriever pokemonSpeciesRetriever, ITranslationStratergy translationStratergy)
         {
-            _pokeApiClient = pokeApiClient;
+            _pokemonSpeciesRetriever = pokemonSpeciesRetriever;
             _translationStratergy = translationStratergy;
         }
 
         public async Task<PokemonSpeciesResult> GetPokemonSpeciesAsync(PokemonSpeciesRequest pokemonSpeciesRequest, CancellationToken ct)
         {
-            var result = await _pokeApiClient.GetResponseAsync(pokemonSpeciesRequest, ct);
+            var result = await _pokemonSpeciesRetriever.GetPokemonAsync(pokemonSpeciesRequest, ct);
 
-            return result.ToPokemonSpeciesResult();
+            if (result == null)
+                return new PokemonSpeciesResult(404, "Pokemon Not found.");
+
+            return new PokemonSpeciesResult(result);
         }
 
         public async Task<PokemonSpeciesTranslatedResult> GetTranslatedPokemonSpeciesAsync(PokemonSpeciesRequest pokemonSpeciesRequest, CancellationToken ct)
         {
-            var pokemonSpices = await GetPokemonSpeciesAsync(pokemonSpeciesRequest, ct);
+
+            var pokemonSpices = await _pokemonSpeciesRetriever.GetPokemonAsync(pokemonSpeciesRequest, ct);
 
             if (pokemonSpices == null)
-                return null;
+                return new PokemonSpeciesTranslatedResult(404, "Pokemon Not found.");
 
             var translationRequest = new PokemonTranslationRequest()
             {
                 Habitat = pokemonSpices.Habitat,
                 IsLegendary = pokemonSpices.IsLegendary,
-                TranslationText = pokemonSpices.Description
+                TranslationText = pokemonSpices.Description,
+                Name=pokemonSpices.Name
             };
 
             var translatedResult = await _translationStratergy.GetTranslationAsync(translationRequest, ct);
 
-            return new PokemonSpeciesTranslatedResult()
-            {
-                Description = translatedResult.TranslatedDescription,
-                Habitat = pokemonSpices.Habitat,
-                IsLegendary = pokemonSpices.IsLegendary,
-                Name = pokemonSpices.Name,
-                TranslationProvider = translatedResult.TranslationProvider
-            };
+            return new PokemonSpeciesTranslatedResult(translatedResult);
+
         }
     }
 }

@@ -16,6 +16,7 @@ namespace TrueLayer.Pokemon.Api.Installer
             services.TryAddSingleton<ITranslationApiClient, TranslationApiClient>();
             services.TryAddSingleton<ITranslationStratergy, TranslationStratergy>();
             services.TryAddSingleton<IRetryPolicyProvider, RetryPolicyProvider>();
+            services.TryAddSingleton<IPokemonSpeciesRetriever, PokemonSpeciesRetriever>();
             services.AddHttpClient("PokeApi", x =>
             {
                 x.BaseAddress = new System.Uri(configuration.GetSection("ApiClientConfiguration:PokeApiBaseUrl").Get<string>());
