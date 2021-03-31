@@ -33,4 +33,19 @@ This docker file contains the tool needed in the pipeline. the image is based on
 
 - Use `http://localhost:8080/swagger/index.html`url  from browser to test the API using `swagger`
 
+### Run from Command Line [Windows]
+
+#### Pre-Req
+
+- Install Microsoft .Net 5 Framework
+
+#### Run
+
+- Clone git Repo or Download and extract code from git.
+- Open Command line and select path to `*/Source\TrueLayer.Pokemon.Api`
+- run restore `dotnet restore --force --configfile nuget.config`
+- run command `dotnet run`
+- Open Browser and use `http://localhost:8080/swagger/index.html`url  from browser to test the API using `swagger`
+
+
 ## Contribute
